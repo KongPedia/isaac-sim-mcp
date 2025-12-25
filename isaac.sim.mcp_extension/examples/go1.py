@@ -26,15 +26,12 @@ SOFTWARE.
 import asyncio
 from time import sleep
 import omni
-from omni.isaac.core import World
-from omni.isaac.core.robots import Robot
-from omni.isaac.core.utils.types import ArticulationAction
-from omni.isaac.core.utils.stage import add_reference_to_stage
-from omni.isaac.core.objects import DynamicCuboid
-from omni.isaac.nucleus import get_assets_root_path
+from isaacsim.core.api import World, SimulationContext, PhysicsContext
+from isaacsim.core.api.objects import DynamicCuboid
+from isaacsim.core.api.utils.types import ArticulationAction
+from isaacsim.core.utils.stage import add_reference_to_stage
+from isaacsim.storage.native import get_assets_root_path
 import numpy as np
-from omni.isaac.core import SimulationContext
-from omni.isaac.core import PhysicsContext
 
 class Go1Simulation:
     """Simulation of Go1 robot in a factory environment using the BaseSample pattern."""
@@ -209,9 +206,9 @@ class Go1Simulation:
         
         # Add the Go1 robot to the scene
         # self.go1_robot = self.my_world.stage.GetPrimAtPath("/World/Go1")
-        # from omni.isaac.articulations import Articulation
+        # from isaacsim.core.api.articulations import Articulation
         # self.go1_robot_articulation = Articulation(prim_path=robot_prim_path)
-        from omni.isaac.core.articulations import Articulation
+        from isaacsim.core.api.articulations import Articulation
         # art = Articulation(prim_path="/World/Go1")
 
         self.go1_robot = Articulation(prim_path="/World/Go1", name="Go1")

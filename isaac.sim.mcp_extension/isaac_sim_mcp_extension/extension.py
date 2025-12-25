@@ -26,7 +26,7 @@ SOFTWARE.
 
 import asyncio
 import carb
-# import omni.ext
+import omni.ext
 # import omni.ui as ui
 import omni.usd
 import threading
@@ -43,10 +43,12 @@ import omni.kit.commands
 import omni.physx as _physx
 import omni.timeline
 from typing import Dict, Any, List, Optional, Union
-from omni.isaac.nucleus import get_assets_root_path
-from omni.isaac.core.prims import XFormPrim
+
+from isaacsim.core.prims import XFormPrim
+from isaacsim.core.utils.stage import add_reference_to_stage
+from isaacsim.storage.native import get_assets_root_path
+
 import numpy as np
-from omni.isaac.core import World
 # Import Beaver3d and USDLoader
 from isaac_sim_mcp_extension.gen3d import Beaver3d
 from isaac_sim_mcp_extension.usd import USDLoader
@@ -325,6 +327,18 @@ class MCPExtension(omni.ext.IExt):
 
     
 
+    def _get_assets_root_path(self) -> Optional[str]:
+        """Get assets root path with fallback for unconfigured environments.
+        
+        Returns:
+            Assets root path string or None if not found.
+        """
+        assets_root_path = get_assets_root_path()
+        if not assets_root_path:
+            # Fallback for environments where Nucleus / assets root resolution is not configured.
+            assets_root_path = self._settings.get("/persistent/isaac/asset_root/default")
+        return assets_root_path
+
     def execute_script(self, code: str) :
         """Execute a Python script within the Isaac Sim context.
         
@@ -374,7 +388,9 @@ class MCPExtension(omni.ext.IExt):
         self._stage = omni.usd.get_context().get_stage()
         assert self._stage is not None
         stage_path = self._stage.GetRootLayer().realPath
-        assets_root_path = get_assets_root_path()
+
+        assets_root_path = self._get_assets_root_path()
+
         return {"status": "success", "message": "pong", "assets_root_path": assets_root_path}
         
     def omini_kit_command(self,  command: str, prim_type: str) -> Dict[str, Any]:
@@ -383,13 +399,10 @@ class MCPExtension(omni.ext.IExt):
         return {"status": "success", "message": "command executed"}
     
     def create_robot(self, robot_type: str = "g1", position: List[float] = [0, 0, 0]):
-        from omni.isaac.core.utils.prims import create_prim
-        from omni.isaac.core.utils.stage import add_reference_to_stage, is_stage_loading
-        from omni.isaac.nucleus import get_assets_root_path
-        
-
         stage = omni.usd.get_context().get_stage()
-        assets_root_path = get_assets_root_path()
+
+        assets_root_path = self._get_assets_root_path()
+
         print("position: ", position)
         
         if robot_type.lower() == "franka":

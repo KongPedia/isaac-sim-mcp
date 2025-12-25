@@ -26,16 +26,13 @@ SOFTWARE.
 import asyncio
 from time import sleep
 import omni
-from omni.isaac.core import World
-from omni.isaac.core.robots import Robot
-from omni.isaac.core.utils.types import ArticulationAction
-from omni.isaac.core.utils.stage import add_reference_to_stage
-from omni.isaac.core.objects import DynamicCuboid
-from omni.isaac.nucleus import get_assets_root_path
+from isaacsim.core.api import World, SimulationContext, PhysicsContext
+from isaacsim.core.api.objects import DynamicCuboid
+from isaacsim.core.api.utils.types import ArticulationAction
+from isaacsim.core.prims import XFormPrim
+from isaacsim.core.utils.stage import add_reference_to_stage
+from isaacsim.storage.native import get_assets_root_path
 import numpy as np
-from omni.isaac.core import SimulationContext
-from omni.isaac.core import PhysicsContext
-from omni.isaac.core.prims import XFormPrim
 
 class G1Simulation:
     """Simulation of G1 robot in a factory environment using the BaseSample pattern."""
@@ -175,9 +172,9 @@ class G1Simulation:
         
         # Add the G1 robot to the scene
         # self.g1_robot = self.my_world.stage.GetPrimAtPath("/World/G1")
-        # from omni.isaac.articulations import Articulation
+        # from isaacsim.core.api.articulations import Articulation
         # self.g1_robot_articulation = Articulation(prim_path=robot_prim_path)
-        from omni.isaac.core.articulations import Articulation
+        from isaacsim.core.api.articulations import Articulation
         # art = Articulation(prim_path="/World/G1")
 
         self.g1_robot = Articulation(prim_path="/World/G1", name="G1")
@@ -208,7 +205,7 @@ class G1Simulation:
         # Create the articulation controller for the robot
         # Initialize the robot first to ensure it's properly set up
         # Initialize physics scene first to avoid "no active physics scene" error
-        # from omni.isaac.core import get_physics_context
+        # from isaacsim.core.api import get_physics_context
         physics_context = self.my_world.get_physics_context()
         if physics_context is None:
             print("Warning: Physics context is None")
@@ -249,7 +246,7 @@ class G1Simulation:
                                     kds=[10.0] * self.num_joints)
         
         # print("G1 articulation controller created successfully")
-        # from omni.isaac.core_nodes.IsaacArticulationController import IsaacArticulationController
+        # from isaacsim.core.nodes.IsaacArticulationController import IsaacArticulationController
       
 
         # self.g1_controller = IsaacArticulationController(self.g1_robot)
