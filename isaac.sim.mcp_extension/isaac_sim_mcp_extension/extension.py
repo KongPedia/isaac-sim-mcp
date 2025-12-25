@@ -327,6 +327,18 @@ class MCPExtension(omni.ext.IExt):
 
     
 
+    def _get_assets_root_path(self) -> Optional[str]:
+        """Get assets root path with fallback for unconfigured environments.
+        
+        Returns:
+            Assets root path string or None if not found.
+        """
+        assets_root_path = get_assets_root_path()
+        if not assets_root_path:
+            # Fallback for environments where Nucleus / assets root resolution is not configured.
+            assets_root_path = self._settings.get("/persistent/isaac/asset_root/default")
+        return assets_root_path
+
     def execute_script(self, code: str) :
         """Execute a Python script within the Isaac Sim context.
         
@@ -377,10 +389,7 @@ class MCPExtension(omni.ext.IExt):
         assert self._stage is not None
         stage_path = self._stage.GetRootLayer().realPath
 
-        assets_root_path = get_assets_root_path()
-        if not assets_root_path:
-            # Fallback for environments where Nucleus / assets root resolution is not configured.
-            assets_root_path = self._settings.get("/persistent/isaac/asset_root/default")
+        assets_root_path = self._get_assets_root_path()
 
         return {"status": "success", "message": "pong", "assets_root_path": assets_root_path}
         
@@ -392,9 +401,7 @@ class MCPExtension(omni.ext.IExt):
     def create_robot(self, robot_type: str = "g1", position: List[float] = [0, 0, 0]):
         stage = omni.usd.get_context().get_stage()
 
-        assets_root_path = get_assets_root_path()
-        if not assets_root_path:
-            assets_root_path = self._settings.get("/persistent/isaac/asset_root/default")
+        assets_root_path = self._get_assets_root_path()
 
         print("position: ", position)
         
